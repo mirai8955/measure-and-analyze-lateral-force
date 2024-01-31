@@ -1,0 +1,31 @@
+clc
+all clear
+clear
+close all;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+s = daq('ni');
+% 
+ch3 = addinput(dq, "Dev2", "ctr0", "Position");
+% get(ch3)
+
+% 
+
+% encoderPosition = read(dq, 1, 'OutputFormat','Matrix');
+
+ch3.EncoderType = 'X4';
+
+encoderPosition = read(dq,1);
+
+encoderCPR = 4096; %% or 1024 ??    %%RE30Eだと1回転当たり1024??もしかしたら違う
+encoderPositionDeg = encoderPosition.Dev1_ctr0 * 2 * pi / encoderCPR; 
+% encoderPositionDeg = encoderPosition.Dev1_ctr0 * 2* pi / encoderCPR;  %6.5???%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+addinput(dq, 'Dev1', 'ai0', 'Voltage'); %use external clock
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+dq.Rate = 10000; %%Sampling Rate 2 kHz
+daqDuration = seconds(5);
+% s.DurationInSeconds = 50; %%Sampling Duration 50s
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+[positionData, timestamps] = read(dq, daqDuration, 'OutputFormat', 'Matrix');
